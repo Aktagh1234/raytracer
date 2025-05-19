@@ -35,6 +35,7 @@ public:
     inline float squared_length() const {  // returns the squared length of the vector
         return e[0] * e[0] + e[1] * e[1] + e[2] * e[2];
     }
+
     void make_unit_vector(); // declaration of make_unit_vector
 };
 
@@ -139,3 +140,7 @@ inline vec3& vec3::operator/=(const float t) {  // scalar division assignment
     e[2] *= k;
     return *this;
 }
+
+ inline vec3 unit_vector(const vec3& v) {
+    return v / v.length();
+    }
