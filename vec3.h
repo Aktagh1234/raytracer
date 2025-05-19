@@ -29,6 +29,12 @@ public:
 
     float e[3];     // array of 3 floats
 
+    inline float length() const {  // returns the length of the vector
+        return sqrt(e[0] * e[0] + e[1] * e[1] + e[2] * e[2]);
+    }
+    inline float squared_length() const {  // returns the squared length of the vector
+        return e[0] * e[0] + e[1] * e[1] + e[2] * e[2];
+    }
     void make_unit_vector(); // declaration of make_unit_vector
 };
 
@@ -73,6 +79,14 @@ inline vec3 operator/(float t, const vec3 &v) {  // scalar division
     return vec3(t / v.e[0], t / v.e[1], t / v.e[2]);
 }
 
+inline vec3 operator*(const vec3 &v, float t) {  // scalar multiplication
+    return vec3(t * v.e[0], t * v.e[1], t * v.e[2]);
+}
+
+inline vec3 operator/(const vec3 &v, float t) {  // scalar division
+    return vec3(v.e[0] / t, v.e[1] / t, v.e[2] / t);
+}
+
 inline float dot(const vec3 &v1, const vec3 &v2) {  // dot product
     return v1.e[0] * v2.e[0] + v1.e[1] * v2.e[1] + v1.e[2] * v2.e[2];
 }
@@ -81,4 +95,47 @@ inline vec3 cross(const vec3 &v1, const vec3 &v2) {  // cross product
     return vec3(v1.e[1] * v2.e[2] - v1.e[2] * v2.e[1],
                  v1.e[2] * v2.e[0] - v1.e[0] * v2.e[2],
                  v1.e[0] * v2.e[1] - v1.e[1] * v2.e[0]);
+}
+
+inline vec3& vec3::operator+=(const vec3 &v2) {  // vector addition assignment
+    e[0] += v2.e[0];
+    e[1] += v2.e[1];
+    e[2] += v2.e[2];
+    return *this;
+}
+
+inline vec3& vec3::operator-=(const vec3 &v2) {  // vector subtraction assignment
+    e[0] -= v2.e[0];
+    e[1] -= v2.e[1];
+    e[2] -= v2.e[2];
+    return *this;
+}
+
+inline vec3& vec3::operator*=(const vec3 &v2) {  // vector multiplication assignment
+    e[0] *= v2.e[0];
+    e[1] *= v2.e[1];
+    e[2] *= v2.e[2];
+    return *this;
+}
+
+inline vec3& vec3::operator/=(const vec3 &v2) {  // vector division assignment
+    e[0] /= v2.e[0];
+    e[1] /= v2.e[1];
+    e[2] /= v2.e[2];
+    return *this;
+}
+
+inline vec3& vec3::operator*=(const float t) {  // scalar multiplication assignment
+    e[0] *= t;
+    e[1] *= t;
+    e[2] *= t;
+    return *this;
+}
+
+inline vec3& vec3::operator/=(const float t) {  // scalar division assignment
+    float k = 1.0f / t;
+    e[0] *= k;
+    e[1] *= k;
+    e[2] *= k;
+    return *this;
 }
