@@ -10,13 +10,21 @@ bool hit_sphere(const vec3& center, float radius, const ray& r) {
     return (discriminant > 0);  // returns true if the ray hits the sphere
 }
 
+vec3 sphere;
+float sphere_radius;
+
 vec3 color(const ray& r){
+    if (hit_sphere(sphere, sphere_radius, r)) {  // check if the ray hits the sphere
+        return vec3(1.0, 0.0, 0.0);  // return red color if it hits
+    }
     vec3 unit_direction = unit_vector(r.direction());  // get the unit direction of the ray
     float t = 0.5 * (unit_direction.y() + 1.0);  // t is a value between 0 and 1
     return (1.0 - t) * vec3(1.0, 1.0, 1.0) + t * vec3(0.5, 0.7, 1.0);  // return a color based on t
 }
 
 int main() {
+    sphere=vec3(0,0,-1);  // set the center of the sphere
+    sphere_radius= 0.5;  // set the radius of the sphere
     int height= 400;
     int width= 800;
     std::cout<< "P3\n" << width << " " << height << "\n255\n";
