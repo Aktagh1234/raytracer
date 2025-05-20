@@ -28,18 +28,18 @@ public:
     inline vec3& operator*=(const vec3 &v2);    //multiplies this vector by v2
     inline vec3& operator/=(const vec3 &v2);    //divides this vector by v2
     inline vec3& operator*=(const float t);     //multiplies this vector by scalar t
-    inline vec3& operator/=(const float t);     //divides this vector by scalar t
-
-    float e[3];     // array of 3 floats
-
+    //inline vec3& operator/=(const float t);     //divides this vector by scalar t
+    inline vec3& operator/=(const float t) {
+        return *this *= 1/t;   //divides this vector by scalar t
+    }
     inline float length() const {  // returns the length of the vector
         return sqrt(e[0] * e[0] + e[1] * e[1] + e[2] * e[2]);
     }
     inline float squared_length() const {  // returns the squared length of the vector
         return e[0] * e[0] + e[1] * e[1] + e[2] * e[2];
     }
-
-    void make_unit_vector(); // declaration of make_unit_vector
+    inline void make_unit_vector(); // declaration of make_unit_vector
+    float e[3];     // array of 3 floats
 };
 
 inline std::istream& operator>>(std::istream &is, vec3 &t) {  // input operator
@@ -136,16 +136,25 @@ inline vec3& vec3::operator*=(const float t) {  // scalar multiplication assignm
     return *this;
 }
 
-inline vec3& vec3::operator/=(const float t) {  // scalar division assignment
+/*inline vec3& vec3::operator/=(const float t) {  // scalar division assignment
     float k = 1.0f / t;
     e[0] *= k;
     e[1] *= k;
     e[2] *= k;
     return *this;
-}
+}*/
 
  inline vec3 unit_vector(const vec3& v) {
     return v / v.length();
+}
+
+vec3 random_in_unit_sphere() {
+    vec3 p;
+    do {
+        p=2.9*vec3(drand48(), drand48(), drand48()) - vec3(1, 1, 1);  // generate a random point in the unit sphere
     }
+    while(p.squared_length() >= 1.0);  // check if the point is inside the unit sphere
+    return p;
+}
 
 #endif
