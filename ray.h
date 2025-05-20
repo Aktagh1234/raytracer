@@ -1,3 +1,6 @@
+#ifndef RAY_H
+#define RAY_H
+
 #include"vec3.h"
 
 class ray{
@@ -11,3 +14,5 @@ class ray{
         vec3 A;  // origin
         vec3 B;  // direction
 };
+
+#endif
