@@ -1,24 +1,36 @@
 #include<iostream>
 #include"ray.h"
 
-bool hit_sphere(const vec3& center, float radius, const ray& r) {
+float hit_sphere(const vec3& center, float radius, const ray& r) {
     vec3 oc = r.origin() - center;  // vector from the ray origin to the sphere center
     float a = dot(r.direction(), r.direction());  // dot product of the ray direction with itself
     float b = 2.0 * dot(oc, r.direction());  // dot product of oc and the ray direction
     float c = dot(oc, oc) - radius * radius;  // dot product of oc with itself minus the square of the radius
     float discriminant = b * b - 4 * a * c;  // discriminant of the quadratic equation
-    return (discriminant > 0);  // returns true if the ray hits the sphere
+    if (discriminant < 0) {
+        return -1.0;  // returns false if the ray does not hit the sphere
+    }
+    else{
+        return(-b - sqrt(discriminant)) / (2.0 * a);  // returns the t value of the intersection
+    }
 }
 
 vec3 sphere;
 float sphere_radius;
 
 vec3 color(const ray& r){
-    if (hit_sphere(sphere, sphere_radius, r)) {  // check if the ray hits the sphere
-        return vec3(1.0, 0.0, 0.0);  // return red color if it hits
+    float t = hit_sphere(sphere, sphere_radius, r);  // check if the ray hits the sphere
+    //material color
+    if (t > 0.0) {
+        vec3 N = unit_vector(r.point_at_parameter(t) - vec3(0, 0, 0));  // normal vector at the hit point
+        // Normalize N to be in range [0, 1]
+        vec3 normalized = 0.5 * vec3(N.x() + 1, N.y() + 1, N.z() + 1);
+        // Use HSV-to-RGB-like trick to spread colors
+        return vec3(normalized.x(), normalized.y(), 1.0 - normalized.z());
     }
+    //sky color
     vec3 unit_direction = unit_vector(r.direction());  // get the unit direction of the ray
-    float t = 0.5 * (unit_direction.y() + 1.0);  // t is a value between 0 and 1
+    t = 0.5 * (unit_direction.y() + 1.0);  // t is a value between 0 and 1
     return (1.0 - t) * vec3(1.0, 1.0, 1.0) + t * vec3(0.5, 0.7, 1.0);  // return a color based on t
 }
 
