@@ -136,25 +136,12 @@ inline vec3& vec3::operator*=(const float t) {  // scalar multiplication assignm
     return *this;
 }
 
-/*inline vec3& vec3::operator/=(const float t) {  // scalar division assignment
-    float k = 1.0f / t;
-    e[0] *= k;
-    e[1] *= k;
-    e[2] *= k;
-    return *this;
-}*/
-
- inline vec3 unit_vector(const vec3& v) {
+inline vec3 unit_vector(const vec3& v) {
     return v / v.length();
 }
 
-vec3 random_in_unit_sphere() {
-    vec3 p;
-    do {
-        p=2.9*vec3(drand48(), drand48(), drand48()) - vec3(1, 1, 1);  // generate a random point in the unit sphere
-    }
-    while(p.squared_length() >= 1.0);  // check if the point is inside the unit sphere
-    return p;
+vec3 reflect(const vec3& v, const vec3& n) {
+    return v - 2 * dot(v, n) * n;  
 }
 
 #endif

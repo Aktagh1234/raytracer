@@ -2,11 +2,15 @@
 #define HITABLE
 
 #include"ray.h"
+#include"vec3.h"
+
+class material;  // forward declaration of the material class
 
 struct hit_record{
     float t;  // parameter at which the ray hits the object
     vec3 p;   // point of intersection
     vec3 normal;  // normal vector at the point of intersection
+    material *mat_ptr;  // pointer to the material of the object
 };
 
 class hitable{
