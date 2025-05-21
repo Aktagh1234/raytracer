@@ -1,33 +1,24 @@
 #include<iostream>
-//#include"ray.h"
 #include"hitable_list.h"
 #include"sphere.h"
 #include <cfloat>
 #include "camera.h"
+#include "material.h"
 
-/*float hit_sphere(const vec3& center, float radius, const ray& r) {
-    vec3 oc = r.origin() - center;  // vector from the ray origin to the sphere center
-    float a = dot(r.direction(), r.direction());  // dot product of the ray direction with itself
-    float b = 2.0 * dot(oc, r.direction());  // dot product of oc and the ray direction
-    float c = dot(oc, oc) - radius * radius;  // dot product of oc with itself minus the square of the radius
-    float discriminant = b * b - 4 * a * c;  // discriminant of the quadratic equation
-    if (discriminant < 0) {
-        return -1.0;  // returns false if the ray does not hit the sphere
-    }
-    else{
-        return(-b - sqrt(discriminant)) / (2.0 * a);  // returns the t value of the intersection
-    }
-}*/
-
-//vec3 sphere;
-//float sphere_radius;
-
-vec3 color(const ray& r, hitable *world){
+vec3 color(const ray& r, hitable *world, int depth){
     hit_record rec;  // create a hit_record object
     if (world->hit(r,0.001, FLT_MAX, rec)) {
-        vec3 target = rec.p + rec.normal + random_in_unit_sphere();  // get a random point in the unit sphere
+        //vec3 target = rec.p + rec.normal + random_in_unit_sphere();  // get a random point in the unit sphere
         //Drawing out spheres
-        return 0.5 * color(ray(rec.p, target - rec.p), world);  // return a color based on the normal vector
+        //return 0.5 * color(ray(rec.p, target - rec.p), world);  // return a color based on the normal vector
+        ray scattered;
+        vec3 attenuation;
+        if (depth < 50 && rec.mat_ptr->scatter(r, rec, attenuation, scattered)) {
+            return attenuation * color(scattered, world, depth+1);  
+        }
+        else{
+            return vec3(0,0,0);  // return black if the ray is not scattered
+        }
     }
     else{
         //sky
@@ -45,11 +36,13 @@ int main() {
     int ns=100;  // number of samples per pixel
     std::cout<< "P3\n" << width << " " << height << "\n255\n";
 
-    hitable *list[2];  // list of hitable objects
+    hitable *list[4];  // list of hitable objects
     camera cam;
-    list[0] = new sphere(vec3(0, 0, -1), 0.5);  // create a sphere object
-    list[1] = new sphere(vec3(0, -100.5, -1), 100);  // create a large sphere object
-    hitable *world = new hitable_list(list, 2);  // create a hitable list with the spheres
+    list[0] = new sphere(vec3(0, 0, -1), 0.5, new lambertian(vec3(0.8,0.3,0.3)));  // create a sphere object
+    list[1] = new sphere(vec3(0, -100.5, -1), 100, new lambertian(vec3(0.8,0.8,0.8)));  // create a large sphere object
+    list[2] = new sphere(vec3(1, 0, -1), 0.5, new metal(vec3(0.8,0.6,0.2)));  // create a sphere object
+    list[3] = new sphere(vec3(-1, 100.5, -1), 100, new metal(vec3(0.8,0.8,0.8)));  // create a sphere object
+    hitable *world = new hitable_list(list, 4);  // create a hitable list with the spheres
     for (int y = height - 1; y >= 0; y--) {     // from top to bottom
         for (int x = 0; x < width; x++) {  
             vec3 col(0,0,0);
@@ -58,7 +51,7 @@ int main() {
                 float v = float(y+drand48()) / float(height);  // v coordinate
                 ray r = cam.get_ray(u, v);  // create a ray using the camera
                 vec3 p = r.point_at_parameter(2.0);  
-                col += color(r, world);  // get the color from the ray
+                col += color(r, world, 0);  // get the color from the ray, start with depth 0
             }
             col /= float(ns);  // average the color over the number of samples
             col = vec3(sqrt(col.r()), sqrt(col.g()), sqrt(col.b()));  // gamma correction
