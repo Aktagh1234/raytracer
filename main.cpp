@@ -37,13 +37,20 @@ int main() {
     std::cout<< "P3\n" << width << " " << height << "\n255\n";
 
     hitable *list[5];  // list of hitable objects
-    camera cam;
+
     list[0] = new sphere(vec3(0, 0, -1), 0.5, new lambertian(vec3(0.1,0.2,0.5)));  // create a sphere object
     list[1] = new sphere(vec3(0, -100.5, -1), 100, new lambertian(vec3(0.8,0.8,0.0)));  // create a large sphere object
     list[2] = new sphere(vec3(1, 0, -1), 0.5, new metal(vec3(0.8,0.6,0.2),0.2));  // create a sphere object
     list[3] = new sphere(vec3(-1, 0, -1), 0.5, new dielectric(1.5));  // create a sphere object
     list[4] = new sphere(vec3(-1, 0, -1), -0.45, new dielectric(1.5));  // create a sphere object
     hitable *world = new hitable_list(list, 5);  // create a hitable list with the spheres
+    
+    vec3 lookfrom(3,3,2);  
+    vec3 lookat(0,0,-1);  
+    float dist_to_focus = (lookfrom - lookat).length();  
+    float aperture = 2.0;
+
+    camera cam(lookfrom, lookat, vec3(0,1,0), 20, float(width)/float(height), aperture, dist_to_focus);  // create a camera object
     for (int y = height - 1; y >= 0; y--) {     // from top to bottom
         for (int x = 0; x < width; x++) {  
             vec3 col(0,0,0);
